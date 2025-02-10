@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <string.h>
+#define MAX_CODE 100
+#define MAX_LEN 50
+typedef struct {
+    char result[MAX_LEN];
+    char op[MAX_LEN];
+    char arg1[MAX_LEN];
+    char arg2[MAX_LEN];
+} TAC; // Three-address code structure
+TAC code[MAX_CODE];
+int code_count = 0;
+int find_common_subexpression(char *op, char *arg1, char *arg2) {
+    for (int i = 0; i < code_count; i++) {
+        if (strcmp(code[i].op, op) == 0 &&
+            strcmp(code[i].arg1, arg1) == 0 &&
+            strcmp(code[i].arg2, arg2) == 0) {
+            return i; // Return the index of the common subexpression
+        }
+    }
+    return -1;
+}
+void optimize_code() {
+    TAC optimized_code[MAX_CODE];
+    int optimized_count = 0;
+
+    for (int i = 0; i < code_count; i++) {
+        int common_index = find_common_subexpression(code[i].op, code[i].arg1, code[i].arg2);
+        if (common_index != -1) {
+            // Replace with existing result variable
+            printf("%s = %s  (Common Subexpression Eliminated)\n", code[i].result, code[common_index].result);
+        } else {
+            // Keep unique expressions
+            optimized_code[optimized_count++] = code[i];
+            printf("%s = %s %s %s\n", code[i].result, code[i].arg1, code[i].op, code[i].arg2);
+        }
+    }
+}
+
+int main() {
+    printf("Enter the number of three-address code statements: ");
+    scanf("%d", &code_count);
+
+    printf("Enter the three-address code (result = arg1 op arg2):\n");
+    for (int i = 0; i < code_count; i++) {
+        scanf("%s %s %s %s", code[i].result, code[i].arg1, code[i].op, code[i].arg2);
+    }
+
+    printf("\nOptimized Code:\n");
+    optimize_code();
+
+    return 0;
+}
