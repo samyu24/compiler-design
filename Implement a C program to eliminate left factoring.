@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_RULES 10
+#define MAX_LEN 100
+
+typedef struct {
+    char non_terminal;
+    char productions[MAX_RULES][MAX_LEN];
+    int count;
+} GrammarRule;
+
+// Function to find the longest common prefix
+void find_common_prefix(GrammarRule *rule, char *prefix) {
+    strcpy(prefix, rule->productions[0]); // Start with the first production
+
+    for (int i = 1; i < rule->count; i++) {
+        int j = 0;
+        while (prefix[j] && rule->productions[i][j] && prefix[j] == rule->productions[i][j]) {
+            j++;
+        }
+        prefix[j] = '\0'; // Shorten the prefix to the common part
+    }
+}
+
+// Function to perform left factoring
+void eliminate_left_factoring(GrammarRule *rule) {
+    char prefix[MAX_LEN];
+    find_common_prefix(rule, prefix);
+
+    int prefix_len = strlen(prefix);
+    if (prefix_len == 0) {
+        // No common prefix, no left factoring needed
+        return;
+    }
+
+    // Create new non-terminal
+    char new_non_terminal = rule->non_terminal + '\'';
+
+    printf("\nModified Grammar:\n");
+    printf("%c -> %s%c'\n", rule->non_terminal, prefix, new_non_terminal);
+
+    printf("%c' -> ", new_non_terminal);
+    int first = 1;
+    for (int i = 0; i < rule->count; i++) {
+        if (strncmp(rule->productions[i], prefix, prefix_len) == 0) {
+            printf("%s", rule->productions[i] + prefix_len);
+        } else {
+            printf("%s", rule->productions[i]);
+        }
+        if (i < rule->count - 1) {
+            printf(" | ");
+        }
+    }
+    printf(" | ε\n");
+}
+
+int main() {
+    GrammarRule rule;
+
+    // Input the grammar
+    printf("Enter the non-terminal: ");
+    scanf(" %c", &rule.non_terminal);
+
+    printf("Enter the number of productions: ");
+    scanf("%d", &rule.count);
+
+    printf("Enter the productions (one per line):\n");
+    for (int i = 0; i < rule.count; i++) {
+        scanf("%s", rule.productions[i]);
+    }
+
+    eliminate_left_factoring(&rule);
+
+    return 0;
+}
