@@ -1,0 +1,127 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define MAX_SYMBOLS 100
+
+// Structure for a symbol table entry
+typedef struct {
+    char name[50];  // Identifier name
+    char type[20];  // Data type
+    char scope[10]; // Scope (local/global)
+    int value;      // Optional value
+} Symbol;
+
+Symbol symbolTable[MAX_SYMBOLS]; // Array of symbol table entries
+int symbolCount = 0; // Number of entries in the symbol table
+
+// Function to insert a symbol into the table
+void insert_symbol() {
+    if (symbolCount >= MAX_SYMBOLS) {
+        printf("Symbol table is full!\n");
+        return;
+    }
+
+    Symbol newSymbol;
+    printf("Enter identifier name: ");
+    scanf("%s", newSymbol.name);
+    printf("Enter data type: ");
+    scanf("%s", newSymbol.type);
+    printf("Enter scope (local/global): ");
+    scanf("%s", newSymbol.scope);
+    printf("Enter value (or -1 if not applicable): ");
+    scanf("%d", &newSymbol.value);
+
+    // Check if the symbol already exists
+    for (int i = 0; i < symbolCount; i++) {
+        if (strcmp(symbolTable[i].name, newSymbol.name) == 0) {
+            printf("Error: Symbol '%s' already exists in the table!\n", newSymbol.name);
+            return;
+        }
+    }
+
+    // Insert symbol
+    symbolTable[symbolCount++] = newSymbol;
+    printf("Symbol '%s' added successfully.\n", newSymbol.name);
+}
+
+// Function to search for a symbol
+void search_symbol() {
+    char searchName[50];
+    printf("Enter the identifier name to search: ");
+    scanf("%s", searchName);
+
+    for (int i = 0; i < symbolCount; i++) {
+        if (strcmp(symbolTable[i].name, searchName) == 0) {
+            printf("Symbol Found:\n");
+            printf("Name: %s, Type: %s, Scope: %s, Value: %d\n",
+                   symbolTable[i].name, symbolTable[i].type, symbolTable[i].scope, symbolTable[i].value);
+            return;
+        }
+    }
+    printf("Symbol '%s' not found!\n", searchName);
+}
+
+// Function to delete a symbol
+void delete_symbol() {
+    char deleteName[50];
+    printf("Enter the identifier name to delete: ");
+    scanf("%s", deleteName);
+
+    for (int i = 0; i < symbolCount; i++) {
+        if (strcmp(symbolTable[i].name, deleteName) == 0) {
+            // Shift remaining symbols
+            for (int j = i; j < symbolCount - 1; j++) {
+                symbolTable[j] = symbolTable[j + 1];
+            }
+            symbolCount--;
+            printf("Symbol '%s' deleted successfully.\n", deleteName);
+            return;
+        }
+    }
+    printf("Symbol '%s' not found!\n", deleteName);
+}
+
+// Function to display the symbol table
+void display_table() {
+    if (symbolCount == 0) {
+        printf("Symbol table is empty!\n");
+        return;
+    }
+
+    printf("\nSymbol Table:\n");
+    printf("------------------------------------------------------\n");
+    printf("| %-10s | %-10s | %-10s | %-10s |\n", "Name", "Type", "Scope", "Value");
+    printf("------------------------------------------------------\n");
+
+    for (int i = 0; i < symbolCount; i++) {
+        printf("| %-10s | %-10s | %-10s | %-10d |\n",
+               symbolTable[i].name, symbolTable[i].type, symbolTable[i].scope, symbolTable[i].value);
+    }
+    printf("------------------------------------------------------\n");
+}
+
+// Main menu
+int main() {
+    int choice;
+    while (1) {
+        printf("\nSymbol Table Operations:\n");
+        printf("1. Insert a symbol\n");
+        printf("2. Search for a symbol\n");
+        printf("3. Delete a symbol\n");
+        printf("4. Display symbol table\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1: insert_symbol(); break;
+            case 2: search_symbol(); break;
+            case 3: delete_symbol(); break;
+            case 4: display_table(); break;
+            case 5: exit(0);
+            default: printf("Invalid choice! Try again.\n");
+        }
+    }
+    return 0;
+}
