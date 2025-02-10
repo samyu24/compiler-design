@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <string.h>
+#define MAX_RULES 10
+#define MAX_LEN 100
+typedef struct {
+    char non_terminal;
+    char productions[MAX_RULES][MAX_LEN];
+    int count;
+} GrammarRule;
+void eliminate_left_recursion(GrammarRule *rule) {
+    char alpha[MAX_RULES][MAX_LEN], beta[MAX_RULES][MAX_LEN];
+    int alpha_count = 0, beta_count = 0; 
+    for (int i = 0; i < rule->count; i++) {
+        if (rule->productions[i][0] == rule->non_terminal) { 
+            alpha_count++;
+        } else {
+            strcpy(beta[beta_count], rule->productions[i]); 
+            beta_count++;
+        }
+    }
+
+    if (alpha_count == 0) {
+        return;
+    }
+    char new_non_terminal = rule->non_terminal + '\''; 
+    printf("\nModified Grammar:\n");
+    for (int i = 0; i < beta_count; i++) {
+        printf("%c -> %s%c'\n", rule->non_terminal, beta[i], new_non_terminal);
+    }
+    for (int i = 0; i < alpha_count; i++) {
+        printf("%c' -> %s%c' | ε\n", new_non_terminal, alpha[i], new_non_terminal);
+    }
+}
+int main() {
+    GrammarRule rule;
+    printf("Enter the non-terminal: ");
+    scanf(" %c", &rule.non_terminal);
+    printf("Enter the number of productions: ");
+    scanf("%d", &rule.count);
+    printf("Enter the productions (one per line):\n");
+    for (int i = 0; i < rule.count; i++) {
+        scanf("%s", rule.productions[i]);
+    }
+    eliminate_left_recursion(&rule);
+    return 0;
+}
