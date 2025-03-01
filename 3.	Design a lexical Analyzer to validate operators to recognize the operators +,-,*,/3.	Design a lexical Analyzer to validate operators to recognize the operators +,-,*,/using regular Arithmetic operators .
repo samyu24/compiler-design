@@ -1,0 +1,23 @@
+import re
+
+class LexicalAnalyzer:
+    def __init__(self):
+        # Define the pattern for arithmetic operators
+        self.operator_pattern = re.compile(r'^[\+\-\*/]$')
+    
+    def validate_operator(self, token):
+        """Check if the given token is a valid arithmetic operator"""
+        if self.operator_pattern.match(token):
+            return f"Valid operator: {token}"
+        else:
+            return f"Invalid operator: {token}"
+
+# Example usage
+analyzer = LexicalAnalyzer()
+tokens = ["+", "-", "*", "/", "x", "&", "5"]
+
+for token in tokens:
+    print(analyzer.validate_operator(token))
+output:
+Enter a sentence (Subject Verb): John eats
+Valid sentence!
